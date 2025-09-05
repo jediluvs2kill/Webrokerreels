@@ -2,13 +2,15 @@
 import React from 'react';
 import MyFavoritesIcon from './icons/MyFavoritesIcon';
 
-type View = 'home' | 'feed' | 'submit' | 'profile' | 'favorites';
+type View = 'home' | 'feed' | 'submit' | 'profile' | 'favorites' | 'editProfile';
 interface HeaderProps {
   currentView: View;
   setView: (view: View) => void;
+  onEditProfile: () => void;
+  isOwnProfile: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
+const Header: React.FC<HeaderProps> = ({ currentView, setView, onEditProfile, isOwnProfile }) => {
   const isHomePage = currentView === 'home';
 
   return (
@@ -33,11 +35,19 @@ const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
                 <MyFavoritesIcon />
                 <span className="hidden sm:inline">My Favorites</span>
             </button>
+            {isOwnProfile && (
+              <button
+                onClick={onEditProfile}
+                className="px-4 py-1.5 bg-blue-600 text-white backdrop-blur-sm rounded-md hover:bg-blue-700 transition text-sm font-semibold"
+              >
+                Edit Profile
+              </button>
+            )}
             <button 
-              onClick={() => setView(currentView === 'profile' || currentView === 'favorites' ? 'feed' : 'home')} 
+              onClick={() => setView(currentView === 'profile' || currentView === 'favorites' || currentView === 'editProfile' ? 'feed' : 'home')} 
               className="px-4 py-1.5 bg-white/20 text-white backdrop-blur-sm rounded-md hover:bg-white/30 transition text-sm font-semibold"
             >
-              {currentView === 'profile' || currentView === 'favorites' ? '← Back to Feed' : 'Home'}
+              {currentView === 'profile' || currentView === 'favorites' || currentView === 'editProfile' ? '← Back to Feed' : 'Home'}
             </button>
         </div>
       )}

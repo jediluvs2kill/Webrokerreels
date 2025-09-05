@@ -135,4 +135,24 @@ export const REELS_DATA: Reel[] = [
       area: 1100,
     },
   },
+  {
+    id: 'reel-8',
+    videoUrl: 'https://www.instagram.com/reel/C8K4Jz7S-ag/',
+    sourceType: 'instagram',
+    realtor: {
+      id: 'realtor-1', // Anjali Sharma
+      name: 'Anjali Sharma',
+      avatarUrl: 'https://i.pravatar.cc/150?u=realtor1',
+      agency: 'Prestige Properties',
+      type: 'Broker',
+      contact: '+91 98765 43210'
+    },
+    property: {
+      address: 'Sushant Lok, Gurgaon',
+      price: 65000000, // 6.5 Cr
+      beds: 5,
+      baths: 5,
+      area: 4100,
+    },
+  },
 ];

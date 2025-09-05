@@ -43,6 +43,8 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel, onViewProfile, onOpenFavorite
   const [showContactInfo, setShowContactInfo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const isInstagramReel = reel.sourceType === 'instagram' || reel.videoUrl.includes('instagram.com');
+
   const handleVideoClick = useCallback(() => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -67,25 +69,70 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel, onViewProfile, onOpenFavorite
     setIsLoading(false);
   };
 
+  const getInstagramEmbedUrl = (url: string) => {
+    if (!url) return null;
+    try {
+        const urlObject = new URL(url);
+        const pathParts = urlObject.pathname.split('/').filter(p => p);
+        if ((pathParts[0] === 'p' || pathParts[0] === 'reel') && pathParts[1]) {
+            // Using /embed/captioned to include the original post's caption
+            return `https://www.instagram.com/${pathParts[0]}/${pathParts[1]}/embed/captioned`;
+        }
+    } catch (e) {
+        console.error("Invalid URL for Instagram reel", e);
+    }
+    return null;
+  };
+
+  const renderVideoPlayer = () => {
+    if (isInstagramReel) {
+        const embedUrl = getInstagramEmbedUrl(reel.videoUrl);
+        if (embedUrl) {
+            return (
+                <div className="w-full h-full bg-black flex items-center justify-center">
+                    <iframe 
+                        src={embedUrl}
+                        className="w-full h-full"
+                        frameBorder="0" 
+                        allowFullScreen
+                        scrolling="no"
+                        title={`Instagram reel for ${reel.property.address}`}
+                    ></iframe>
+                </div>
+            );
+        }
+        return (
+            <div className="w-full h-full flex items-center justify-center bg-gray-800 text-white p-4 text-center">
+                <p>Invalid or unsupported Instagram Reel link.</p>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <video
+                ref={videoRef}
+                onClick={handleVideoClick}
+                src={reel.videoUrl}
+                loop
+                className="w-full h-full object-cover"
+                aria-label={`Property reel for ${reel.property.address}`}
+            ></video>
+            {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <svg className="w-20 h-20 text-white/50" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+            )}
+        </>
+    );
+  };
+
   return (
     <>
-      <video
-        ref={videoRef}
-        onClick={handleVideoClick}
-        src={reel.videoUrl}
-        loop
-        className="w-full h-full object-cover"
-        aria-label={`Property reel for ${reel.property.address}`}
-      ></video>
+      {renderVideoPlayer()}
       
-      {!isPlaying && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <svg className="w-20 h-20 text-white/50" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-          </svg>
-        </div>
-      )}
-
       {showContactInfo && (
         <div 
           className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-20"

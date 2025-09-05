@@ -22,6 +22,21 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ realtor, reels, onShare }
             video.currentTime = 0; // Reset video to start
         }
     };
+    
+    const getInstagramEmbedUrl = (url: string) => {
+        if (!url) return null;
+        try {
+            const urlObject = new URL(url);
+            const pathParts = urlObject.pathname.split('/').filter(p => p);
+            if ((pathParts[0] === 'p' || pathParts[0] === 'reel') && pathParts[1]) {
+                return `https://www.instagram.com/${pathParts[0]}/${pathParts[1]}/embed`;
+            }
+        } catch (e) {
+            console.error("Invalid URL for Instagram reel", e);
+        }
+        return null;
+    };
+
 
     return (
         <div className="w-full h-full flex flex-col items-center bg-gray-900 text-white p-4 pt-20 sm:pt-24 overflow-y-auto">
@@ -60,24 +75,44 @@ const BrokerProfile: React.FC<BrokerProfileProps> = ({ realtor, reels, onShare }
                     </h3>
                     {reels.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {reels.map(reel => (
+                            {reels.map(reel => {
+                                const isInstagramReel = reel.sourceType === 'instagram' || reel.videoUrl.includes('instagram.com');
+
+                                return (
                                 <div key={reel.id} className="group relative aspect-[9/16] bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                                    <video 
-                                        src={reel.videoUrl} 
-                                        className="w-full h-full object-cover" 
-                                        muted 
-                                        loop
-                                        playsInline
-                                        onMouseEnter={e => handleVideoHover(e, 'play')}
-                                        onMouseLeave={e => handleVideoHover(e, 'pause')}
-                                        aria-label={`Video thumbnail for ${reel.property.address}`}
-                                    />
+                                    {isInstagramReel ? (
+                                        (() => {
+                                            const embedUrl = getInstagramEmbedUrl(reel.videoUrl);
+                                            return embedUrl ? (
+                                                <iframe 
+                                                    src={embedUrl}
+                                                    className="w-full h-full border-0"
+                                                    scrolling="no"
+                                                    allowTransparency
+                                                    title={`Instagram reel for ${reel.property.address}`}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-xs p-2 text-center text-white">Invalid Link</div>
+                                            )
+                                        })()
+                                    ) : (
+                                        <video 
+                                            src={reel.videoUrl} 
+                                            className="w-full h-full object-cover" 
+                                            muted 
+                                            loop
+                                            playsInline
+                                            onMouseEnter={e => handleVideoHover(e, 'play')}
+                                            onMouseLeave={e => handleVideoHover(e, 'pause')}
+                                            aria-label={`Video thumbnail for ${reel.property.address}`}
+                                        />
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3 pointer-events-none">
                                         <p className="text-white font-semibold text-sm truncate">{reel.property.address}</p>
                                         <p className="text-white font-bold text-lg">{formatPrice(reel.property.price)}</p>
                                     </div>
                                 </div>
-                            ))}
+                            )})}
                         </div>
                     ) : (
                         <p className="text-gray-400 text-center py-8">No listings found for this broker.</p>

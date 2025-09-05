@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import type { Reel, Realtor, Property } from '../types';
 
@@ -10,6 +11,7 @@ const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
   const [agency, setAgency] = useState('');
   const [contact, setContact] = useState('');
   const [realtorType, setRealtorType] = useState<'Broker' | 'Owner'>('Broker');
+  const [sourceType, setSourceType] = useState<'direct' | 'instagram'>('direct');
   const [videoUrl, setVideoUrl] = useState('');
   const [address, setAddress] = useState('');
   const [price, setPrice] = useState('');
@@ -52,6 +54,7 @@ const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
       videoUrl: videoUrl,
       realtor: newRealtor,
       property: newProperty,
+      sourceType: sourceType,
     };
     
     // Simulate API call
@@ -106,9 +109,18 @@ const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
           <fieldset className="border border-gray-700 p-4 rounded-md">
             <legend className="px-2 font-semibold">Property Details</legend>
             <div className="space-y-4">
+               <div>
+                <label htmlFor="sourceType" className="block text-sm font-medium text-gray-400 mb-1">Video Source *</label>
+                <select id="sourceType" value={sourceType} onChange={(e) => setSourceType(e.target.value as 'direct' | 'instagram')} className={inputClass} required>
+                  <option value="direct">Direct Video Link</option>
+                  <option value="instagram">Instagram Reel Link</option>
+                </select>
+              </div>
               <div>
-                <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-400 mb-1">Direct Video URL *</label>
-                <input type="url" id="videoUrl" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={inputClass} placeholder="e.g., https://assets.mixkit.co/.../video.mp4" required />
+                <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-400 mb-1">
+                  {sourceType === 'direct' ? 'Direct Video URL *' : 'Instagram Reel URL *'}
+                </label>
+                <input type="url" id="videoUrl" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} className={inputClass} placeholder={sourceType === 'direct' ? "e.g., https://assets.mixkit.co/.../video.mp4" : "e.g., https://www.instagram.com/reel/..."} required />
               </div>
               <div>
                 <label htmlFor="address" className="block text-sm font-medium text-gray-400 mb-1">Property Address *</label>

@@ -21,10 +21,11 @@ export interface Reel {
   videoUrl: string;
   realtor: Realtor;
   property: Property;
+  sourceType?: 'direct' | 'instagram';
 }
 
 export interface FavoriteList {
-  id: string;
+  id:string;
   name: string;
   reelIds: string[];
 }

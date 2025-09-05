@@ -7,13 +7,14 @@ import SubmitReelForm from './components/SubmitReelForm';
 import FilterComponent, { Filters } from './components/FilterComponent';
 import BrokerProfile from './components/BrokerProfile';
 import FavoritesPage from './components/FavoritesPage';
+import EditProfile from './components/EditProfile';
 import FavoritesModal from './components/FavoritesModal';
 import ShareModal from './components/ShareModal';
 import { REELS_DATA } from './constants';
 import * as favoritesService from './services/favoritesService';
 import type { Reel, Realtor, FavoriteList } from './types';
 
-type View = 'home' | 'feed' | 'submit' | 'profile' | 'favorites';
+type View = 'home' | 'feed' | 'submit' | 'profile' | 'favorites' | 'editProfile';
 
 const App: React.FC = () => {
   const [view, setView] = useState<View>('home');
@@ -33,6 +34,9 @@ const App: React.FC = () => {
 
   // State for sharing
   const [shareableContent, setShareableContent] = useState<{ url: string; title: string; } | null>(null);
+  
+  // Simulate a logged-in user
+  const [currentUserId] = useState<string>('realtor-1');
   
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
@@ -80,6 +84,18 @@ const App: React.FC = () => {
     setView('profile');
   };
   
+  const handleProfileUpdate = (updatedRealtor: Realtor) => {
+    // Update the realtor's information across all their reels
+    const newReels = reels.map(reel => {
+        if (reel.realtor.id === updatedRealtor.id) {
+            return { ...reel, realtor: updatedRealtor };
+        }
+        return reel;
+    });
+    setReels(newReels);
+    setView('profile'); // Go back to the profile view
+  };
+
   // --- Favorites Handlers ---
   const handleOpenFavoritesModal = (reel: Reel) => {
     setActiveReelForFavorites(reel);
@@ -128,6 +144,9 @@ const App: React.FC = () => {
       handleShare(url, `Check out ${realtor.name}'s listings on webroker`);
   };
 
+  const currentUser = useMemo(() => {
+    return reels.find(reel => reel.realtor.id === currentUserId)?.realtor ?? null;
+  }, [reels, currentUserId]);
 
   const selectedRealtor = useMemo(() => {
     if (!selectedRealtorId) return null;
@@ -187,6 +206,16 @@ const App: React.FC = () => {
         return <BrokerProfile realtor={selectedRealtor} reels={realtorReels} onShare={handleShareProfile}/>;
       case 'favorites':
         return <FavoritesPage allReels={reels} favoriteLists={favoriteLists} setFavoriteLists={setFavoriteLists} />
+      case 'editProfile':
+        if (!currentUser) {
+            setView('feed'); // Fallback if user data not found
+            return null;
+        }
+        return <EditProfile 
+            currentUser={currentUser} 
+            onUpdateProfile={handleProfileUpdate}
+            onCancel={() => setView('profile')}
+        />;
       case 'home':
       default:
         return <HomePage setView={setView} />;
@@ -195,7 +224,12 @@ const App: React.FC = () => {
 
   return (
     <div ref={mainContainerRef} className="bg-black text-white w-screen overflow-y-hidden flex flex-col items-center">
-      <Header currentView={view} setView={setView} />
+      <Header 
+        currentView={view} 
+        setView={setView} 
+        onEditProfile={() => setView('editProfile')}
+        isOwnProfile={view === 'profile' && selectedRealtorId === currentUserId}
+      />
       <main className="flex-grow w-full h-full flex justify-center">
         {renderContent()}
       </main>
