@@ -8,7 +8,6 @@ interface SubmitReelFormProps {
 const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
   const [realtorName, setRealtorName] = useState('');
   const [agency, setAgency] = useState('');
-  // FIX: Add state for missing Realtor properties: type and contact
   const [contact, setContact] = useState('');
   const [realtorType, setRealtorType] = useState<'Broker' | 'Owner'>('Broker');
   const [videoUrl, setVideoUrl] = useState('');
@@ -25,14 +24,12 @@ const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
     setIsSubmitting(true);
     
     // Basic validation
-    // FIX: Add contact to validation check
     if (!realtorName || !videoUrl || !address || !price || !contact) {
         alert("Please fill all required fields.");
         setIsSubmitting(false);
         return;
     }
 
-    // FIX: Add missing properties 'type' and 'contact' to conform to the Realtor interface.
     const newRealtor: Realtor = {
       id: `realtor-${Date.now()}`,
       name: realtorName,
@@ -72,9 +69,9 @@ const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
   const inputClass = "w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition";
 
   return (
-    <div className="flex justify-center items-center h-full bg-gray-900 text-white p-4 pt-20 overflow-y-auto w-full">
+    <div className="flex justify-center items-start h-full bg-gray-900 text-white p-4 pt-20 sm:pt-24 overflow-y-auto w-full">
       <div className="w-full max-w-lg">
-        <h2 className="text-3xl font-bold text-center mb-6">Share Your Property Reel</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">Share Your Property Reel</h2>
         {submitSuccess && (
           <div className="bg-green-600 text-white text-center p-3 rounded-md mb-4" role="alert">
             Reel submitted successfully! Taking you to the feed...
@@ -92,7 +89,6 @@ const SubmitReelForm: React.FC<SubmitReelFormProps> = ({ onReelSubmit }) => {
                 <label htmlFor="agency" className="block text-sm font-medium text-gray-400 mb-1">Agency Name</label>
                 <input type="text" id="agency" value={agency} onChange={(e) => setAgency(e.target.value)} className={inputClass} />
               </div>
-              {/* FIX: Add form fields for contact and realtor type */}
               <div>
                 <label htmlFor="contact" className="block text-sm font-medium text-gray-400 mb-1">Contact Number *</label>
                 <input type="tel" id="contact" value={contact} onChange={(e) => setContact(e.target.value)} className={inputClass} placeholder="+91 12345 67890" required />

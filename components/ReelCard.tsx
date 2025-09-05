@@ -16,33 +16,15 @@ import CloseIcon from './icons/CloseIcon';
 
 interface ReelCardProps {
   reel: Reel;
+  onViewProfile: (realtorId: string) => void;
+  onOpenFavoritesModal: (reel: Reel) => void;
+  isLiked: boolean;
+  onShare: (reel: Reel) => void;
 }
-
-// --- LocalStorage Helper Functions ---
-const LIKED_REELS_KEY = 'webroker_liked_reels';
-
-const getLikedReels = (): string[] => {
-  try {
-    const likedReels = localStorage.getItem(LIKED_REELS_KEY);
-    return likedReels ? JSON.parse(likedReels) : [];
-  } catch (error) {
-    console.error("Failed to parse liked reels from localStorage", error);
-    return [];
-  }
-};
-
-const saveLikedReels = (reelIds: string[]) => {
-  try {
-    localStorage.setItem(LIKED_REELS_KEY, JSON.stringify(reelIds));
-  } catch (error) {
-    console.error("Failed to save liked reels to localStorage", error);
-  }
-};
-// --- End Helper Functions ---
 
 
 // Helper function to format price
-const formatPrice = (price: number): string => {
+export const formatPrice = (price: number): string => {
   if (price >= 10000000) {
     return `₹ ${(price / 10000000).toFixed(2)} Cr`;
   }
@@ -53,36 +35,13 @@ const formatPrice = (price: number): string => {
 };
 
 
-const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
+const ReelCard: React.FC<ReelCardProps> = ({ reel, onViewProfile, onOpenFavoritesModal, isLiked, onShare }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showAiInsight, setShowAiInsight] = useState(false);
   const [aiInsight, setAiInsight] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(1200); // Dummy base count
   const [showContactInfo, setShowContactInfo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const likedReels = getLikedReels();
-    if (likedReels.includes(reel.id)) {
-      setIsLiked(true);
-    }
-  }, [reel.id]);
-
-  const handleLikeClick = () => {
-    const likedReels = getLikedReels();
-    const newLikedState = !isLiked;
-    
-    setIsLiked(newLikedState);
-    setLikeCount(prev => newLikedState ? prev + 1 : prev - 1);
-
-    if (newLikedState) {
-      saveLikedReels([...likedReels, reel.id]);
-    } else {
-      saveLikedReels(likedReels.filter(id => id !== reel.id));
-    }
-  };
 
   const handleVideoClick = useCallback(() => {
     if (videoRef.current) {
@@ -107,16 +66,9 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
     setAiInsight(insight);
     setIsLoading(false);
   };
-  
-  const formatLikeCount = (count: number): string => {
-    if (count >= 1000) {
-        return `${(count / 1000).toFixed(1)}k`;
-    }
-    return count.toString();
-  }
 
   return (
-    <section className="relative h-full w-full snap-start flex items-center justify-center bg-black">
+    <>
       <video
         ref={videoRef}
         onClick={handleVideoClick}
@@ -172,7 +124,11 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
         <div className="flex justify-between items-end">
           {/* Left Side: Info */}
           <div className="space-y-3">
-            <div className="flex items-center space-x-3">
+            <button 
+              onClick={() => onViewProfile(reel.realtor.id)}
+              className="flex items-center space-x-3 text-left hover:opacity-80 transition-opacity"
+              aria-label={`View profile for ${reel.realtor.name}`}
+            >
               <div className="relative">
                 <img src={reel.realtor.avatarUrl} alt={reel.realtor.name} className="w-12 h-12 rounded-full border-2 border-white" />
                 <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5 border-2 border-black" title={reel.realtor.type}>
@@ -180,13 +136,13 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-lg">{reel.realtor.name}</h3>
+                <h3 className="font-bold text-base sm:text-lg">{reel.realtor.name}</h3>
                 <p className="text-sm text-gray-300">{reel.realtor.agency}</p>
               </div>
-            </div>
+            </button>
             <div>
-              <h4 className="text-xl font-semibold flex items-center gap-2"><LocationIcon />{reel.property.address}</h4>
-              <p className="text-2xl font-bold mt-1">{formatPrice(reel.property.price)}</p>
+              <h4 className="text-lg sm:text-xl font-semibold flex items-center gap-2"><LocationIcon />{reel.property.address}</h4>
+              <p className="text-xl sm:text-2xl font-bold mt-1">{formatPrice(reel.property.price)}</p>
             </div>
             <div className="flex space-x-4 text-sm">
               <span className="flex items-center gap-1.5"><BedIcon /> {reel.property.beds} Beds</span>
@@ -197,19 +153,19 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
           {/* Right Side: Actions */}
           <div className="flex flex-col items-center space-y-5">
             <button 
-              onClick={handleLikeClick} 
+              onClick={() => onOpenFavoritesModal(reel)} 
               className={`flex flex-col items-center transition-colors ${isLiked ? 'text-red-500' : 'text-white'}`}
-              aria-label={isLiked ? 'Unlike reel' : 'Like reel'}
+              aria-label={isLiked ? 'Manage in favorites' : 'Add to favorites'}
               aria-pressed={isLiked}
             >
               <HeartIcon isLiked={isLiked} />
-              <span className="text-xs mt-1 font-semibold">{formatLikeCount(likeCount)}</span>
+              <span className="text-xs mt-1 font-semibold">Favorite</span>
             </button>
             <button onClick={() => setShowContactInfo(true)} className="flex flex-col items-center">
               <ChatIcon />
               <span className="text-xs mt-1">Contact</span>
             </button>
-            <button className="flex flex-col items-center">
+            <button onClick={() => onShare(reel)} className="flex flex-col items-center">
               <ShareIcon />
               <span className="text-xs mt-1">Share</span>
             </button>
@@ -239,7 +195,7 @@ const ReelCard: React.FC<ReelCardProps> = ({ reel }) => {
             )}
         </div>
       </div>
-    </section>
+    </>
   );
 };
 

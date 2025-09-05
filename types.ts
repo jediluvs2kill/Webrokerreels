@@ -22,3 +22,9 @@ export interface Reel {
   realtor: Realtor;
   property: Property;
 }
+
+export interface FavoriteList {
+  id: string;
+  name: string;
+  reelIds: string[];
+}
