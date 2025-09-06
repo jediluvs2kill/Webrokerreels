@@ -49,7 +49,8 @@ const ReelCard: React.FC<ReelCardProps> = ({
         // Instagram URLs can be /p/, /reel/, or /reels/
         const pathParts = urlObject.pathname.split('/').filter(p => p);
         if ((pathParts[0] === 'p' || pathParts[0] === 'reel' || pathParts[0] === 'reels') && pathParts[1]) {
-            return `https://www.instagram.com/${pathParts[0]}/${pathParts[1]}/embed/captioned`;
+            // By removing "/captioned", we get a cleaner embed without the post caption.
+            return `https://www.instagram.com/${pathParts[0]}/${pathParts[1]}/embed/`;
         }
     } catch (e) {
         console.error("Invalid URL for Instagram reel", e);
@@ -61,10 +62,14 @@ const ReelCard: React.FC<ReelCardProps> = ({
     const embedUrl = getInstagramEmbedUrl(reel.videoUrl);
     if (embedUrl) {
         return (
-            <div className="w-full h-full bg-black flex items-center justify-center">
+            <div className="w-full h-full bg-black overflow-hidden">
                 <iframe 
                     src={embedUrl}
-                    className="w-full h-[99.9%]" // Using 99.9% to prevent potential scrollbar issues on some browsers
+                    // We make the iframe taller than its container and use negative margins
+                    // to hide the Instagram header and footer, creating a video-only experience.
+                    // The extra height (120px) should cover both header (~60px) and footer (~60px).
+                    // The negative top margin (-60px) pushes the header out of view.
+                    className="w-full h-[calc(100%_+_120px)] -mt-[60px]"
                     frameBorder="0" 
                     allowFullScreen
                     scrolling="no"
