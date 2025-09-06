@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import type { Reel, FavoriteList } from '../types';
 import * as favoritesService from '../services/favoritesService';
-import { formatPrice } from './ReelCard';
+// FIX: Removed unused formatPrice import as property data is no longer available on Reels.
 import CloseIcon from './icons/CloseIcon';
 
 interface FavoritesPageProps {
@@ -60,12 +60,10 @@ const FavoritesPage: React.FC<FavoritesPageProps> = ({ allReels, favoriteLists, 
                                     playsInline
                                     onMouseEnter={e => handleVideoHover(e, 'play')}
                                     onMouseLeave={e => handleVideoHover(e, 'pause')}
-                                    aria-label={`Video thumbnail for ${reel.property.address}`}
+                                    // FIX: The 'property' field was removed from the Reel type. Use reel.id instead.
+                                    aria-label={`Video thumbnail for reel ${reel.id}`}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3 pointer-events-none">
-                                    <p className="text-white font-semibold text-sm truncate">{reel.property.address}</p>
-                                    <p className="text-white font-bold text-lg">{formatPrice(reel.property.price)}</p>
-                                </div>
+                                {/* FIX: The 'property' field was removed from the Reel type, so the overlay showing address and price is removed. */}
                             </div>
                         ))}
                     </div>

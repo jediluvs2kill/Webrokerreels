@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+// FIX: Realtor type is now available from ../types
 import type { Realtor } from '../types';
 
 interface EditProfileProps {

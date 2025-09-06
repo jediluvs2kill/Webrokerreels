@@ -1,10 +1,11 @@
 
 import React from 'react';
 
-const OwnerIcon: React.FC = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H5v-2H3v-2H1v-4a6 6 0 016-6h4a6 6 0 016 6z" />
+// Re-purposed as ThumbsDownIcon
+const ThumbsDownIcon: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M10 14h-4.764a2.25 2.25 0 01-1.789-3.876l1.381-2.986A2.25 2.25 0 016.755 3h5.495a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-2.25m9 3l3.5-7.5M15 9l3.5-7.5" />
   </svg>
 );
 
-export default OwnerIcon;
+export default ThumbsDownIcon;

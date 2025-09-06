@@ -1,10 +1,11 @@
 
 import React from 'react';
 
-const BrokerIcon: React.FC = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+// Re-purposed as ThumbsUpIcon
+const ThumbsUpIcon: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14 10h4.764a2.25 2.25 0 011.789 3.876l-1.381 2.986A2.25 2.25 0 0117.245 21h-5.495a2.25 2.25 0 01-2.25-2.25V7.5a2.25 2.25 0 012.25-2.25h2.25m-9-3l-3.5 7.5M9 15l-3.5 7.5" />
   </svg>
 );
 
-export default BrokerIcon;
+export default ThumbsUpIcon;
